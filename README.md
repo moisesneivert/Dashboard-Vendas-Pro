@@ -148,21 +148,3 @@ dashboard_vendas_streamlit_pro/
     ├── test_forecasting.py
     └── test_goals.py
 ```
-
-## Deploy no Streamlit Community Cloud
-
-1. Suba este projeto para um repositório no GitHub.
-2. Mantenha `app.py` e `requirements.txt` na raiz do repositório.
-3. Não envie `.streamlit/secrets.toml` para o GitHub.
-4. No Streamlit Community Cloud, crie o app a partir do repositório.
-5. Cole o conteúdo de `secrets.toml` na área de Secrets do app.
-6. Publique.
-
-## Melhorias futuras
-
-- Autorização por perfil de usuário.
-- Upsert real no PostgreSQL.
-- Modelo preditivo com validação temporal.
-- Métricas de erro da previsão.
-- API FastAPI para servir os indicadores.
-- Docker Compose com PostgreSQL local.
