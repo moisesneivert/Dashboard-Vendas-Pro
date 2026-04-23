@@ -1,34 +1,85 @@
-# Ambiente virtual
-.venv/
-venv/
-env/
-
-# Python
+# ================================
+# PYTHON
+# ================================
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+*.so
 
-# Streamlit - arquivos sensíveis
+# Distribuição / build
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ================================
+# AMBIENTE VIRTUAL
+# ================================
+.venv/
+venv/
+env/
+ENV/
+
+# ================================
+# STREAMLIT (SENSÍVEL)
+# ================================
 .streamlit/secrets.toml
 
-# Variáveis de ambiente
+# ================================
+# VARIÁVEIS DE AMBIENTE
+# ================================
 .env
 .env.*
+.envrc
 
-# Sistema operacional
-.DS_Store
-Thumbs.db
-
-# IDEs/Editores
-.vscode/
-.idea/
-
-# Testes/cache
+# ================================
+# TESTES E CACHE
+# ================================
 .pytest_cache/
 .coverage
 htmlcov/
+.cache/
+.mypy_cache/
+.ruff_cache/
 
-# Arquivos temporários
+# ================================
+# JUPYTER (SE USAR)
+# ================================
+.ipynb_checkpoints/
+
+# ================================
+# SISTEMA OPERACIONAL
+# ================================
+.DS_Store
+Thumbs.db
+
+# ================================
+# EDITORES / IDE
+# ================================
+.vscode/
+.idea/
+
+# ================================
+# LOGS E TEMPORÁRIOS
+# ================================
 *.log
 *.tmp
+*.bak
+*.swp
+
+# ================================
+# BANCO DE DADOS (OPCIONAL)
+# ================================
+*.db
+*.sqlite3
+
+# ================================
+# DADOS (OPCIONAL - ESCOLHA)
+# ================================
+# Se NÃO quiser subir dados:
+# data/
+
+# Se quiser subir apenas exemplos:
+# data/*
+# !data/exemplo.csv
