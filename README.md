@@ -1,126 +1,133 @@
-# Dashboard Vendas Pro
+# Dashboard Pro de Vendas com Python
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red)
-![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-black)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue)
-![Scikit-learn](https://img.shields.io/badge/Scikit--learn-Forecasting-orange)
-![Pytest](https://img.shields.io/badge/Pytest-Tests-green)
-![Status](https://img.shields.io/badge/Status-Portfolio%20Project-success)
+Projeto de portfólio para Python, dados e backend leve com Streamlit.
 
-Dashboard profissional de vendas desenvolvido com **Python, Pandas e Streamlit**, com **autenticação de usuários**, **análise de metas**, **previsão de vendas**, **integração com PostgreSQL** e **testes automatizados**.
+## Funcionalidades implementadas
 
-## Visão geral
+- Autenticação de usuário com senha protegida por hash PBKDF2.
+- Conexão opcional com PostgreSQL.
+- Upload de CSV.
+- Base de vendas exemplo.
+- Validação e limpeza de estados inválidos.
+- KPIs comerciais.
+- Gráficos de faturamento, categoria, produto e vendedor.
+- Análise de metas mensais.
+- Previsão de vendas com regressão linear.
+- Exportação de base filtrada.
+- Testes automatizados com Pytest.
+- Estrutura pronta para deploy no Streamlit Community Cloud.
 
-Este projeto foi construído como uma aplicação prática de análise comercial, com foco em cenários reais de negócio e boas práticas de desenvolvimento em Python.
+## Usuários locais de teste
 
-A proposta é transformar uma base de vendas em um painel interativo, permitindo:
+Configure o arquivo `.streamlit/secrets.toml`.
 
-- acompanhar indicadores de desempenho;
-- aplicar filtros dinâmicos;
-- comparar resultados com metas mensais;
-- visualizar tendências de faturamento;
-- gerar previsões de vendas;
-- trabalhar com arquivos CSV ou banco PostgreSQL.
-
-## Demonstração
-
-### Principais recursos
-
-- Autenticação com login
-- Base local de exemplo
-- Upload de CSV
-- Integração com PostgreSQL
-- KPIs comerciais
-- Filtros por período e dimensões de negócio
-- Gráficos interativos
-- Análise de metas mensais
-- Previsão de vendas
-- Exportação da base filtrada
-- Testes automatizados com Pytest
-
-## Stack utilizada
-
-- **Python**
-- **Pandas**
-- **Streamlit**
-- **PostgreSQL**
-- **SQLAlchemy**
-- **Scikit-learn**
-- **Pytest**
-
-## Funcionalidades
-
-### 1. Autenticação de usuários
-O sistema possui tela de login com validação de credenciais via arquivo de secrets.
-
-### 2. Fonte de dados flexível
-A aplicação permite usar três fontes:
-
-- base local de exemplo;
-- upload manual de CSV;
-- leitura de dados a partir do PostgreSQL.
-
-### 3. KPIs comerciais
-O dashboard calcula automaticamente:
-
-- faturamento total;
-- lucro total;
-- quantidade vendida;
-- número de pedidos;
-- ticket médio;
-- margem percentual.
-
-### 4. Filtros interativos
-É possível filtrar os dados por:
-
-- período;
-- região;
-- estado;
-- categoria;
-- produto;
-- vendedor;
-- canal de venda;
-- status de pagamento.
-
-### 5. Visualização analítica
-O painel apresenta gráficos de:
-
-- faturamento por mês;
-- faturamento por categoria;
-- top 10 produtos;
-- faturamento por vendedor;
-- faturamento por região;
-- faturamento por canal.
-
-### 6. Análise de metas
-A aplicação compara o realizado com metas mensais de faturamento e lucro, exibindo:
-
-- valor realizado;
-- valor da meta;
-- percentual de atingimento;
-- status da meta.
-
-### 7. Previsão de vendas
-Foi implementada uma previsão inicial de faturamento com regressão linear simples usando `scikit-learn`.
-
-### 8. Testes automatizados
-O projeto conta com testes unitários para validar:
-
-- autenticação;
-- tratamento dos dados;
-- limpeza de estados inválidos;
-- análise de metas;
-- geração de previsões.
-
-## Estrutura do projeto
+Copie:
 
 ```bash
-dashboard-vendas-pro/
+cp .streamlit/secrets.toml.example .streamlit/secrets.toml
+```
+
+Usuários de teste:
+
+```text
+admin / admin123
+analista / dados123
+```
+
+Troque essas credenciais antes de publicar.
+
+## Como rodar localmente
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+No Windows:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+## Como rodar os testes
+
+```bash
+pytest
+```
+
+## PostgreSQL
+
+O app pode usar PostgreSQL como fonte de dados.
+
+No arquivo `.streamlit/secrets.toml`, configure:
+
+```toml
+[connections.postgres]
+url = "postgresql+psycopg://usuario:senha@host:5432/database"
+```
+
+Para banco com SSL, use:
+
+```toml
+url = "postgresql+psycopg://usuario:senha@host:5432/database?sslmode=require"
+```
+
+Crie a tabela usando:
+
+```bash
+psql "sua_url_do_banco" -f sql/schema.sql
+```
+
+## Formato do CSV de vendas
+
+A base deve conter:
+
+```text
+data
+pedido_id
+cliente
+cidade
+estado
+regiao
+produto
+categoria
+vendedor
+canal_venda
+quantidade
+preco_unitario
+custo_unitario
+status_pagamento
+```
+
+## Formato do CSV de metas
+
+A base deve conter:
+
+```text
+mes
+meta_faturamento
+meta_lucro
+```
+
+Exemplo:
+
+```text
+2026-01,500000,130000
+2026-02,550000,145000
+```
+
+## Estrutura
+
+```text
+dashboard_vendas_streamlit_pro/
 ├── app.py
 ├── requirements.txt
 ├── README.md
-├── .gitignore
 ├── .streamlit/
 │   ├── config.toml
 │   └── secrets.toml.example
@@ -140,3 +147,22 @@ dashboard-vendas-pro/
     ├── test_data_processing.py
     ├── test_forecasting.py
     └── test_goals.py
+```
+
+## Deploy no Streamlit Community Cloud
+
+1. Suba este projeto para um repositório no GitHub.
+2. Mantenha `app.py` e `requirements.txt` na raiz do repositório.
+3. Não envie `.streamlit/secrets.toml` para o GitHub.
+4. No Streamlit Community Cloud, crie o app a partir do repositório.
+5. Cole o conteúdo de `secrets.toml` na área de Secrets do app.
+6. Publique.
+
+## Melhorias futuras
+
+- Autorização por perfil de usuário.
+- Upsert real no PostgreSQL.
+- Modelo preditivo com validação temporal.
+- Métricas de erro da previsão.
+- API FastAPI para servir os indicadores.
+- Docker Compose com PostgreSQL local.
