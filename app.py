@@ -1,14 +1,15 @@
 import io
+from pathlib import Path
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-from pathlib import Path
+
 from src.auth import get_users_from_secrets, verify_password
 from src.data_processing import (
     format_currency,
     format_percent,
     load_csv,
-    prepare_sales_data,
 )
 from src.database import get_database_url, read_sales_from_postgres
 from src.forecasting import forecast_monthly_sales
@@ -68,17 +69,17 @@ def logout_button() -> None:
 
 
 @st.cache_data
-def load_default_sales():
+def load_default_sales() -> tuple[pd.DataFrame, list[str]]:
     return load_csv(DATA_DIR / "vendas_exemplo.csv")
 
 
 @st.cache_data
-def load_uploaded_sales(file):
+def load_uploaded_sales(file) -> tuple[pd.DataFrame, list[str]]:
     return load_csv(file)
 
 
 @st.cache_data
-def load_postgres_sales(database_url: str):
+def load_postgres_sales(database_url: str) -> tuple[pd.DataFrame, list[str]]:
     return read_sales_from_postgres(database_url)
 
 
@@ -180,13 +181,14 @@ def show_kpis(df: pd.DataFrame) -> None:
     avg_ticket = revenue / orders if orders else 0
     margin = profit / revenue * 100 if revenue else 0
 
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
 
     col1.metric("Faturamento", format_currency(revenue))
     col2.metric("Lucro", format_currency(profit))
     col3.metric("Pedidos", f"{orders:,}".replace(",", "."))
-    col4.metric("Ticket médio", format_currency(avg_ticket))
-    col5.metric("Margem", format_percent(margin))
+    col4.metric("Itens vendidos", f"{quantity:,}".replace(",", "."))
+    col5.metric("Ticket médio", format_currency(avg_ticket))
+    col6.metric("Margem", format_percent(margin))
 
 
 def show_automatic_insights(df: pd.DataFrame) -> None:
@@ -220,11 +222,7 @@ def show_automatic_insights(df: pd.DataFrame) -> None:
         .head(1)
     )
 
-    monthly_revenue = (
-        df.groupby("mes")["faturamento"]
-        .sum()
-        .sort_index()
-    )
+    monthly_revenue = df.groupby("mes")["faturamento"].sum().sort_index()
 
     col1, col2 = st.columns(2)
 
@@ -264,9 +262,7 @@ def show_automatic_insights(df: pd.DataFrame) -> None:
                 "Há espaço para otimização."
             )
 
-        st.info(
-            f"Ticket médio atual: **{format_currency(avg_ticket)}** por pedido."
-        )
+        st.info(f"Ticket médio atual: **{format_currency(avg_ticket)}** por pedido.")
 
         if len(monthly_revenue) >= 2:
             last_month = monthly_revenue.iloc[-1]
@@ -417,7 +413,10 @@ def show_goals(df: pd.DataFrame) -> None:
         "Opcional: envie um CSV de metas",
         type=["csv"],
         key="goals_upload",
-        help="Colunas esperadas: mes, meta_faturamento, meta_lucro. Exemplo de mês: 2026-01.",
+        help=(
+            "Colunas esperadas: mes, meta_faturamento, meta_lucro. "
+            "Exemplo de mês: 2026-01."
+        ),
     )
 
     try:
@@ -468,7 +467,7 @@ def show_goals(df: pd.DataFrame) -> None:
 
             st.plotly_chart(fig_goal_profit, use_container_width=True)
 
-        st.dataframe(goals_analysis, width="stretch", hide_index=True)
+        st.dataframe(goals_analysis, use_container_width=True, hide_index=True)
 
     except Exception as exc:
         st.error(f"Erro na análise de metas: {exc}")
@@ -522,7 +521,7 @@ def show_forecast(df: pd.DataFrame) -> None:
         )
 
         st.plotly_chart(fig_forecast, use_container_width=True)
-        st.dataframe(forecast, width="stretch", hide_index=True)
+        st.dataframe(forecast, use_container_width=True, hide_index=True)
 
         st.caption(
             "Modelo usado: regressão linear simples sobre o faturamento mensal. "
@@ -558,7 +557,7 @@ def show_tables(df: pd.DataFrame) -> None:
             .sort_values("faturamento", ascending=False)
         )
 
-        st.dataframe(summary_product, width="stretch", hide_index=True)
+        st.dataframe(summary_product, use_container_width=True, hide_index=True)
 
     with tab2:
         summary_seller = (
@@ -572,7 +571,7 @@ def show_tables(df: pd.DataFrame) -> None:
             .sort_values("faturamento", ascending=False)
         )
 
-        st.dataframe(summary_seller, width="stretch", hide_index=True)
+        st.dataframe(summary_seller, use_container_width=True, hide_index=True)
 
     with tab3:
         summary_region = (
@@ -585,12 +584,12 @@ def show_tables(df: pd.DataFrame) -> None:
             .sort_values("faturamento", ascending=False)
         )
 
-        st.dataframe(summary_region, width="stretch", hide_index=True)
+        st.dataframe(summary_region, use_container_width=True, hide_index=True)
 
     with tab4:
         st.dataframe(
             df.sort_values("data", ascending=False),
-            width="stretch",
+            use_container_width=True,
             hide_index=True,
         )
 
