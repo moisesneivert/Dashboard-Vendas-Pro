@@ -1,55 +1,74 @@
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://dashboard-vendas-pro-zaj5qlcnq25abddvpqkcxz.streamlit.app/)
+# Dashboard de Vendas Pro
 
-# 📊 Dashboard de Vendas Profissional
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red)
+![Pandas](https://img.shields.io/badge/Pandas-An%C3%A1lise%20de%20Dados-green)
+![Plotly](https://img.shields.io/badge/Plotly-Gr%C3%A1ficos%20Interativos-purple)
+![Pytest](https://img.shields.io/badge/Pytest-Testes-orange)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
-Aplicação web desenvolvida com **Python** e **Streamlit** para análise de vendas, monitoramento de indicadores e visualização interativa de dados.
+Dashboard profissional de vendas desenvolvido com **Python**, **Streamlit** e **Pandas**, com foco em análise comercial, indicadores de desempenho, visualização interativa de dados, autenticação de usuários, metas, previsão de vendas e integração com PostgreSQL.
 
----
-
-## 💼 Sobre o projeto
-
-Este dashboard simula um ambiente real de análise de vendas, permitindo monitorar desempenho comercial, identificar oportunidades e apoiar decisões estratégicas com base em dados.
-
----
-
-## 🚀 Acesse o projeto
-
-🔗 [Acessar Dashboard Online](https://dashboard-vendas-pro-zaj5qlcnq25abddvpqkcxz.streamlit.app/)
+Este projeto foi criado como parte do meu portfólio para demonstrar habilidades práticas em desenvolvimento Python, análise de dados, organização de código, testes automatizados e construção de aplicações web com Streamlit.
 
 ---
 
-## 🖼️ Demonstração
+## Acesse o projeto online
 
-### Visão geral
+[Dashboard publicado no Streamlit Community Cloud](https://dashboard-vendas-pro-zaj5qlcnq25abddvpqkcxz.streamlit.app/)
 
-![Visão geral do dashboard](assets/dashboard-home.png)
+---
 
-### Gráficos
+## Demonstração
 
-![Gráficos do dashboard](assets/dashboard-graficos.png)
+### Visão geral do dashboard
+
+![Visão geral do dashboard](assets/dashboard_overview.png)
+
+### Gráficos e indicadores
+
+![Gráficos do dashboard](assets/dashboard_charts.png)
 
 ### Tabelas analíticas
 
-![Tabelas do dashboard](assets/dashboard-tabelas.png)
+![Tabelas do dashboard](assets/dashboard_tables.png)
 
 ---
 
-## 📌 Funcionalidades
+## Funcionalidades
 
-- 📈 Visualização de KPIs de vendas
-- 💰 Análise de faturamento e lucro
-- 🧮 Cálculo de ticket médio
-- 📊 Gráficos interativos com Plotly
-- 🔎 Filtros dinâmicos (período, produto, região, vendedor, etc.)
-- 📅 Análise temporal de desempenho
-- 🎯 Análise de metas comerciais
-- 🔮 Previsão de vendas (forecast)
-- 📤 Exportação de dados em CSV
-- 🔐 Autenticação com Streamlit Secrets
+- Autenticação de usuários via `st.secrets`
+- Dashboard interativo com Streamlit
+- KPIs comerciais:
+  - Faturamento
+  - Lucro
+  - Pedidos
+  - Ticket médio
+  - Margem
+- Filtros por:
+  - Período
+  - Região
+  - Estado
+  - Categoria
+  - Produto
+  - Vendedor
+  - Canal de venda
+  - Status de pagamento
+- Gráficos interativos com Plotly
+- Análise de faturamento por mês
+- Análise por categoria, produto e vendedor
+- Análise de metas de faturamento e lucro
+- Previsão simples de vendas com Scikit-learn
+- Upload de arquivo CSV
+- Leitura de base exemplo
+- Integração com PostgreSQL
+- Exportação da base filtrada em CSV
+- Testes automatizados com Pytest
+- Estrutura modular em Python
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias utilizadas
 
 - Python
 - Streamlit
@@ -62,20 +81,37 @@ Este dashboard simula um ambiente real de análise de vendas, permitindo monitor
 
 ---
 
-## 📂 Estrutura do Projeto
+## Estrutura do projeto
 
 ```text
 Dashboard-Vendas-Pro/
-├── app.py
-├── requirements.txt
-├── README.md
-├── .gitignore
-├── LICENSE
-├── assets/              # Imagens do README
-│   ├── dashboard-home.png
-│   ├── dashboard-graficos.png
-│   └── dashboard-tabelas.png
-├── data/
-├── sql/
-├── src/
-└── tests/               # Testes automatizados
+├── app.py                  # Aplicação principal Streamlit
+├── requirements.txt        # Dependências principais do projeto
+├── README.md               # Documentação do projeto
+├── LICENSE                 # Licença do projeto
+├── .gitignore              # Arquivos ignorados pelo Git
+│
+├── assets/                 # Imagens utilizadas no README
+│   ├── dashboard_overview.png
+│   ├── dashboard_charts.png
+│   └── dashboard_tables.png
+│
+├── data/                   # Bases de exemplo
+│   ├── vendas_exemplo.csv
+│   └── metas_vendas.csv
+│
+├── sql/                    # Scripts SQL
+│   └── schema.sql
+│
+├── src/                    # Módulos da aplicação
+│   ├── auth.py             # Autenticação e verificação de senha
+│   ├── database.py         # Conexão com banco de dados
+│   ├── data_processing.py  # Tratamento e preparação dos dados
+│   ├── forecasting.py      # Previsão de vendas
+│   └── goals.py            # Análise de metas
+│
+└── tests/                  # Testes automatizados
+    ├── test_auth.py
+    ├── test_data_processing.py
+    ├── test_forecasting.py
+    └── test_goals.py
