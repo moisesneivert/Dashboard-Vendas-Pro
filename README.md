@@ -9,7 +9,7 @@ Aplicação web desenvolvida com **Python** e **Streamlit** para análise de ven
 
 🚀 Projeto publicado via Streamlit Community Cloud
 
-🔗 Acesse: [https://SEU-LINK-AQUI](https://dashboard-vendas-pro-zaj5qlcnq25abddvpqkcxz.streamlit.app/)
+🔗 Acesse: [https://dashboard-vendas-pro-zaj5qlcnq25abddvpqkcxz.streamlit.app/]
 
 ---
 
