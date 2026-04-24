@@ -1,10 +1,8 @@
-from pathlib import Path
 import io
-
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-
+from pathlib import Path
 from src.auth import get_users_from_secrets, verify_password
 from src.data_processing import (
     format_currency,
