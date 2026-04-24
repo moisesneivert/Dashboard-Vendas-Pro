@@ -13,6 +13,20 @@ Aplicação web desenvolvida com **Python** e **Streamlit** para análise de ven
 
 ---
 
+## 🖼️ Demonstração
+
+### Visão geral
+
+![Visão geral do dashboard](assets/dashboard-home.png)
+
+### Gráficos
+
+![Gráficos do dashboard](assets/dashboard-graficos.png)
+
+### Tabelas analíticas
+
+![Tabelas do dashboard](assets/dashboard-tabelas.png)
+
 ## 📌 Funcionalidades
 
 * 📈 Visualização de KPIs de vendas
