@@ -1,3 +1,4 @@
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://SEU-LINK-AQUI)
 # 📊 Dashboard de Vendas Profissional
 
 Aplicação web desenvolvida com **Python** e **Streamlit** para análise de vendas, monitoramento de indicadores e visualização interativa de dados.
@@ -6,8 +7,9 @@ Aplicação web desenvolvida com **Python** e **Streamlit** para análise de ven
 
 ## 🚀 Status do Projeto
 
-🟡 Em desenvolvimento
-🚀 Deploy em breve via Streamlit Community Cloud
+🚀 Projeto publicado via Streamlit Community Cloud
+
+🔗 Acesse: [https://SEU-LINK-AQUI](https://dashboard-vendas-pro-zaj5qlcnq25abddvpqkcxz.streamlit.app/)
 
 ---
 
