@@ -2,6 +2,7 @@ from pathlib import Path
 import io
 
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 
 from src.auth import get_users_from_secrets, verify_password
@@ -91,36 +92,41 @@ def load_sales_source() -> tuple[pd.DataFrame, list[str], str]:
         ["Base exemplo", "Upload CSV", "PostgreSQL"],
     )
 
-    if source == "Upload CSV":
-        uploaded = st.sidebar.file_uploader("Envie o CSV de vendas", type=["csv"])
+    try:
+        if source == "Upload CSV":
+            uploaded = st.sidebar.file_uploader("Envie o CSV de vendas", type=["csv"])
 
-        if uploaded is None:
-            st.info("Envie um CSV ou selecione outra fonte de dados.")
-            st.stop()
+            if uploaded is None:
+                st.info("Envie um CSV ou selecione outra fonte de dados.")
+                st.stop()
 
-        sales, invalid_states = load_uploaded_sales(uploaded)
-        return sales, invalid_states, "Upload CSV"
+            sales, invalid_states = load_uploaded_sales(uploaded)
+            return sales, invalid_states, "Upload CSV"
 
-    if source == "PostgreSQL":
-        database_url = get_database_url(st.secrets)
+        if source == "PostgreSQL":
+            database_url = get_database_url(st.secrets)
 
-        if not database_url:
-            st.error(
-                "URL do PostgreSQL não configurada em `.streamlit/secrets.toml` "
-                "na chave `[connections.postgres] url`."
-            )
-            st.stop()
+            if not database_url:
+                st.error(
+                    "URL do PostgreSQL não configurada em `.streamlit/secrets.toml` "
+                    "na chave `[connections.postgres] url`."
+                )
+                st.stop()
 
-        sales, invalid_states = load_postgres_sales(database_url)
+            sales, invalid_states = load_postgres_sales(database_url)
 
-        if sales.empty:
-            st.warning("A tabela `vendas` existe, mas ainda não possui registros.")
-            st.stop()
+            if sales.empty:
+                st.warning("A tabela `vendas` existe, mas ainda não possui registros.")
+                st.stop()
 
-        return sales, invalid_states, "PostgreSQL"
+            return sales, invalid_states, "PostgreSQL"
 
-    sales, invalid_states = load_default_sales()
-    return sales, invalid_states, "Base exemplo"
+        sales, invalid_states = load_default_sales()
+        return sales, invalid_states, "Base exemplo"
+
+    except Exception as exc:
+        st.error(f"Erro ao carregar dados: {exc}")
+        st.stop()
 
 
 def sidebar_filters(df: pd.DataFrame) -> pd.DataFrame:
@@ -157,11 +163,12 @@ def sidebar_filters(df: pd.DataFrame) -> pd.DataFrame:
     }
 
     for column, label in filters.items():
-        options = sorted(filtered[column].dropna().unique())
-        selected = st.sidebar.multiselect(label, options)
+        if column in filtered.columns:
+            options = sorted(filtered[column].dropna().unique())
+            selected = st.sidebar.multiselect(label, options)
 
-        if selected:
-            filtered = filtered[filtered[column].isin(selected)]
+            if selected:
+                filtered = filtered[filtered[column].isin(selected)]
 
     return filtered
 
@@ -184,57 +191,225 @@ def show_kpis(df: pd.DataFrame) -> None:
     col5.metric("Margem", format_percent(margin))
 
 
+def show_automatic_insights(df: pd.DataFrame) -> None:
+    st.subheader("Insights automáticos")
+
+    revenue = df["faturamento"].sum()
+    profit = df["lucro"].sum()
+    orders = df["pedido_id"].nunique()
+
+    margin = profit / revenue * 100 if revenue else 0
+    avg_ticket = revenue / orders if orders else 0
+
+    best_category = (
+        df.groupby("categoria")["faturamento"]
+        .sum()
+        .sort_values(ascending=False)
+        .head(1)
+    )
+
+    best_seller = (
+        df.groupby("vendedor")["faturamento"]
+        .sum()
+        .sort_values(ascending=False)
+        .head(1)
+    )
+
+    best_product = (
+        df.groupby("produto")["faturamento"]
+        .sum()
+        .sort_values(ascending=False)
+        .head(1)
+    )
+
+    monthly_revenue = (
+        df.groupby("mes")["faturamento"]
+        .sum()
+        .sort_index()
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if not best_category.empty:
+            st.success(
+                f"Categoria destaque: **{best_category.index[0]}**, "
+                f"com {format_currency(best_category.iloc[0])} em faturamento."
+            )
+
+        if not best_seller.empty:
+            st.info(
+                f"Vendedor com maior faturamento: **{best_seller.index[0]}**, "
+                f"com {format_currency(best_seller.iloc[0])}."
+            )
+
+        if not best_product.empty:
+            st.info(
+                f"Produto mais forte: **{best_product.index[0]}**, "
+                f"gerando {format_currency(best_product.iloc[0])}."
+            )
+
+    with col2:
+        if margin < 10:
+            st.warning(
+                f"Margem baixa: **{format_percent(margin)}**. "
+                "Avalie custos, descontos e precificação."
+            )
+        elif margin >= 25:
+            st.success(
+                f"Margem saudável: **{format_percent(margin)}**. "
+                "O negócio apresenta boa rentabilidade."
+            )
+        else:
+            st.info(
+                f"Margem intermediária: **{format_percent(margin)}**. "
+                "Há espaço para otimização."
+            )
+
+        st.info(
+            f"Ticket médio atual: **{format_currency(avg_ticket)}** por pedido."
+        )
+
+        if len(monthly_revenue) >= 2:
+            last_month = monthly_revenue.iloc[-1]
+            previous_month = monthly_revenue.iloc[-2]
+
+            variation = (
+                (last_month - previous_month) / previous_month * 100
+                if previous_month
+                else 0
+            )
+
+            if variation > 0:
+                st.success(
+                    f"O faturamento cresceu **{format_percent(variation)}** "
+                    "em relação ao mês anterior."
+                )
+            elif variation < 0:
+                st.warning(
+                    f"O faturamento caiu **{format_percent(abs(variation))}** "
+                    "em relação ao mês anterior."
+                )
+            else:
+                st.info("O faturamento ficou estável em relação ao mês anterior.")
+
+
 def show_charts(df: pd.DataFrame) -> None:
     st.subheader("Análise visual")
 
-    col1, col2 = st.columns(2)
+    color_sequence = ["#D4AF37", "#111111", "#666666", "#B8860B"]
 
     revenue_month = (
         df.groupby("mes", as_index=False)["faturamento"]
         .sum()
         .sort_values("mes")
-        .set_index("mes")
+    )
+
+    fig_month = px.line(
+        revenue_month,
+        x="mes",
+        y="faturamento",
+        markers=True,
+        title="Faturamento por mês",
+        color_discrete_sequence=["#D4AF37"],
+    )
+
+    fig_month.update_traces(line=dict(width=4))
+
+    fig_month.update_layout(
+        template="plotly_white",
+        yaxis_title="Faturamento",
+        xaxis_title="Mês",
+        title_font_size=20,
+        height=420,
     )
 
     category = (
         df.groupby("categoria", as_index=False)["faturamento"]
         .sum()
         .sort_values("faturamento", ascending=False)
-        .set_index("categoria")
     )
 
+    fig_category = px.bar(
+        category,
+        x="categoria",
+        y="faturamento",
+        title="Faturamento por categoria",
+        color="categoria",
+        color_discrete_sequence=color_sequence,
+    )
+
+    fig_category.update_layout(
+        template="plotly_white",
+        yaxis_title="Faturamento",
+        xaxis_title="Categoria",
+        showlegend=False,
+        height=420,
+    )
+
+    col1, col2 = st.columns(2)
+
     with col1:
-        st.markdown("**Faturamento por mês**")
-        st.line_chart(revenue_month)
+        st.plotly_chart(fig_month, use_container_width=True)
 
     with col2:
-        st.markdown("**Faturamento por categoria**")
-        st.bar_chart(category)
-
-    col3, col4 = st.columns(2)
+        st.plotly_chart(fig_category, use_container_width=True)
 
     top_products = (
         df.groupby("produto", as_index=False)["faturamento"]
         .sum()
         .sort_values("faturamento", ascending=False)
         .head(10)
-        .set_index("produto")
     )
+
+    fig_products = px.bar(
+        top_products,
+        x="faturamento",
+        y="produto",
+        orientation="h",
+        title="Top 10 produtos por faturamento",
+        color="faturamento",
+        color_continuous_scale="Sunsetdark",
+    )
+
+    fig_products.update_layout(
+        template="plotly_white",
+        xaxis_title="Faturamento",
+        yaxis_title="Produto",
+        height=500,
+    )
+
+    fig_products.update_yaxes(categoryorder="total ascending")
 
     sellers = (
         df.groupby("vendedor", as_index=False)["faturamento"]
         .sum()
         .sort_values("faturamento", ascending=False)
-        .set_index("vendedor")
     )
 
+    fig_sellers = px.bar(
+        sellers,
+        x="vendedor",
+        y="faturamento",
+        title="Faturamento por vendedor",
+        color="faturamento",
+        color_continuous_scale="Cividis",
+    )
+
+    fig_sellers.update_layout(
+        template="plotly_white",
+        yaxis_title="Faturamento",
+        xaxis_title="Vendedor",
+        height=500,
+    )
+
+    col3, col4 = st.columns(2)
+
     with col3:
-        st.markdown("**Top 10 produtos por faturamento**")
-        st.bar_chart(top_products)
+        st.plotly_chart(fig_products, use_container_width=True)
 
     with col4:
-        st.markdown("**Faturamento por vendedor**")
-        st.bar_chart(sellers)
+        st.plotly_chart(fig_sellers, use_container_width=True)
 
 
 def show_goals(df: pd.DataFrame) -> None:
@@ -261,13 +436,39 @@ def show_goals(df: pd.DataFrame) -> None:
             chart_df = goals_analysis[
                 ["mes", "faturamento", "meta_faturamento"]
             ].set_index("mes")
-            st.markdown("**Faturamento realizado x meta**")
-            st.line_chart(chart_df)
+
+            fig_goal_revenue = px.line(
+                chart_df,
+                markers=True,
+                title="Faturamento realizado x meta",
+            )
+
+            fig_goal_revenue.update_layout(
+                template="plotly_white",
+                yaxis_title="Valor",
+                xaxis_title="Mês",
+                height=420,
+            )
+
+            st.plotly_chart(fig_goal_revenue, use_container_width=True)
 
         with col2:
             chart_df = goals_analysis[["mes", "lucro", "meta_lucro"]].set_index("mes")
-            st.markdown("**Lucro realizado x meta**")
-            st.line_chart(chart_df)
+
+            fig_goal_profit = px.line(
+                chart_df,
+                markers=True,
+                title="Lucro realizado x meta",
+            )
+
+            fig_goal_profit.update_layout(
+                template="plotly_white",
+                yaxis_title="Valor",
+                xaxis_title="Mês",
+                height=420,
+            )
+
+            st.plotly_chart(fig_goal_profit, use_container_width=True)
 
         st.dataframe(goals_analysis, width="stretch", hide_index=True)
 
@@ -303,14 +504,26 @@ def show_forecast(df: pd.DataFrame) -> None:
             ignore_index=True,
         )
 
-        pivot = combined.pivot_table(
-            index="mes",
-            columns="tipo",
-            values="valor",
-            aggfunc="sum",
+        fig_forecast = px.line(
+            combined,
+            x="mes",
+            y="valor",
+            color="tipo",
+            markers=True,
+            title="Faturamento realizado x previsto",
+            color_discrete_sequence=["#111111", "#D4AF37"],
         )
 
-        st.line_chart(pivot)
+        fig_forecast.update_traces(line=dict(width=4))
+
+        fig_forecast.update_layout(
+            template="plotly_white",
+            yaxis_title="Faturamento",
+            xaxis_title="Mês",
+            height=450,
+        )
+
+        st.plotly_chart(fig_forecast, use_container_width=True)
         st.dataframe(forecast, width="stretch", hide_index=True)
 
         st.caption(
@@ -423,6 +636,10 @@ def main() -> None:
     st.info(f"Fonte de dados ativa: **{source_name}**")
 
     show_kpis(filtered)
+
+    st.divider()
+
+    show_automatic_insights(filtered)
 
     st.divider()
 
