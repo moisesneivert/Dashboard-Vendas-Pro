@@ -26,6 +26,9 @@ ENV/
 # ================================
 .streamlit/secrets.toml
 
+# Permite versionar o arquivo de exemplo de configuração
+!.streamlit/secrets.toml.example
+
 # ================================
 # VARIÁVEIS DE AMBIENTE
 # ================================
@@ -73,6 +76,7 @@ Thumbs.db
 # BANCO DE DADOS LOCAL
 # ================================
 *.db
+*.sqlite
 *.sqlite3
 
 # ================================
@@ -83,5 +87,6 @@ Thumbs.db
 
 # Se quiser subir apenas dados de exemplo:
 # data/*
-# !data/exemplo.csv
+# !data/vendas_exemplo.csv
+# !data/metas_vendas.csv
 # !data/sample.csv
