@@ -22,7 +22,7 @@ env/
 ENV/
 
 # ================================
-# STREAMLIT (SENSÍVEL)
+# STREAMLIT - ARQUIVOS SENSÍVEIS
 # ================================
 .streamlit/secrets.toml
 
@@ -31,6 +31,7 @@ ENV/
 # ================================
 .env
 .env.*
+!.env.example
 .envrc
 
 # ================================
@@ -44,7 +45,7 @@ htmlcov/
 .ruff_cache/
 
 # ================================
-# JUPYTER (SE USAR)
+# JUPYTER
 # ================================
 .ipynb_checkpoints/
 
@@ -69,17 +70,18 @@ Thumbs.db
 *.swp
 
 # ================================
-# BANCO DE DADOS (OPCIONAL)
+# BANCO DE DADOS LOCAL
 # ================================
 *.db
 *.sqlite3
 
 # ================================
-# DADOS (OPCIONAL - ESCOLHA)
+# DADOS
 # ================================
-# Se NÃO quiser subir dados:
+# Se NÃO quiser subir dados reais:
 # data/
 
-# Se quiser subir apenas exemplos:
+# Se quiser subir apenas dados de exemplo:
 # data/*
 # !data/exemplo.csv
+# !data/sample.csv
