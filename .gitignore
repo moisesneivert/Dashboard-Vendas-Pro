@@ -1,92 +1,15 @@
-# ================================
-# PYTHON
-# ================================
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.so
-
-# Distribuição / build
-build/
-dist/
-*.egg-info/
-.eggs/
-
-# ================================
-# AMBIENTE VIRTUAL
-# ================================
 .venv/
 venv/
-env/
-ENV/
-
-# ================================
-# STREAMLIT - ARQUIVOS SENSÍVEIS
-# ================================
-.streamlit/secrets.toml
-
-# Permite versionar o arquivo de exemplo de configuração
-!.streamlit/secrets.toml.example
-
-# ================================
-# VARIÁVEIS DE AMBIENTE
-# ================================
 .env
-.env.*
-!.env.example
-.envrc
-
-# ================================
-# TESTES E CACHE
-# ================================
+.streamlit/secrets.toml
+__pycache__/
+*.py[cod]
 .pytest_cache/
+.ruff_cache/
 .coverage
 htmlcov/
-.cache/
-.mypy_cache/
-.ruff_cache/
-
-# ================================
-# JUPYTER
-# ================================
-.ipynb_checkpoints/
-
-# ================================
-# SISTEMA OPERACIONAL
-# ================================
-.DS_Store
-Thumbs.db
-
-# ================================
-# EDITORES / IDE
-# ================================
-.vscode/
-.idea/
-
-# ================================
-# LOGS E TEMPORÁRIOS
-# ================================
-*.log
-*.tmp
-*.bak
-*.swp
-
-# ================================
-# BANCO DE DADOS LOCAL
-# ================================
 *.db
-*.sqlite
 *.sqlite3
-
-# ================================
-# DADOS
-# ================================
-# Se NÃO quiser subir dados reais:
-# data/
-
-# Se quiser subir apenas dados de exemplo:
-# data/*
-# !data/vendas_exemplo.csv
-# !data/metas_vendas.csv
-# !data/sample.csv
+.DS_Store
+.idea/
+.vscode/*.log
